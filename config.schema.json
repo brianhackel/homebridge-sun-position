@@ -1,0 +1,81 @@
+{
+  "pluginAlias": "SunPosition",
+  "pluginType": "accessory",
+  "singular": false,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "Sun",
+        "required": true
+      },
+      "location" : {
+          "type": "object",
+          "title": "Location",
+          "properties": {
+              "lat": {
+                  "title": "Latitude",
+                  "type": "number",
+                  "minimum": -90,
+                  "maximim": 90,
+                  "description": "in degrees N",
+                  "required": true
+              },
+              "lon": {
+                  "title": "Longitude",
+                  "type": "number",
+                  "minimum": -180,
+                  "maximim": 180,
+                  "description": "in degrees E",
+                  "required": true
+              }
+          }
+      },
+      "triggers" : {
+          "type": "object",
+          "title": "Trigger Points",
+          "properties": {
+              "minAzimuth": {
+                  "title": "Minimum Azimuth",
+                  "type": "number",
+                  "default": "150",
+                  "required": true
+              },
+              "minAltitude": {
+                  "title": "Minimum Altitude",
+                  "type": "number",
+                  "default": "0",
+                  "required": true
+              },
+              "maxAltitude": {
+                  "title": "Maximum Altitude",
+                  "type": "number",
+                  "default": "60",
+                  "required": true
+              },
+              "offAt": {
+                  "title": "No Occupancy starting at:",
+                  "type": "string",
+                  "required": true,
+                  "enum": ["solarNoon", "nadir", "sunrise", 
+                           "sunset", "sunriseEnd", "sunsetStart",
+                           "dawn", "dusk", "nauticalDawn",
+                           "nauticalDusk", "nightEnd", "night",
+                           "goldenHourEnd", "goldenHour"],
+                  "default": "goldenHour"
+              }
+          }
+      },
+      "updatePeriod": {
+          "title": "Update Period",
+          "type": "number",
+          "minimum": 0.01666,
+          "default": 5,
+          "description": "How often to update the position in minutes."
+      }
+
+    }
+  }
+}
