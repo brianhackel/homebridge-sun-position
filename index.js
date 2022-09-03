@@ -41,6 +41,7 @@ SunPositionAccessory.prototype.getServices = function() {
         .setCharacteristic(Characteristic.Model, "Sun Position");
 
     this.service = new Service.OccupancySensor(this.name);
+    this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(false);
     this.updatePosition();
     return [this.informationService, this.service];
 }
@@ -49,18 +50,16 @@ SunPositionAccessory.prototype.updatePosition = function() {
     var now = new Date();
     var times = suncalc.getTimes(now, this.location.lat, this.location.lon);
 
-    var thereIsLight = false;
-
     var position = suncalc.getPosition(now, this.location.lat, this.location.lon);
     var altitude = position.altitude * 180 / Math.PI;
     var azimuth = (position.azimuth * 180 / Math.PI + 180) % 360;
 
-    var currentlyLight = this.service.getCharacteristic(Characteristic.OccupancyDetected).value;
+    var thereIsLight = this.service.getCharacteristic(Characteristic.OccupancyDetected).value;
 
-    if (currentlyLight) {
+    if (thereIsLight) {
         // once there's light "detected," we don't turn off until the offAt time
         if (now > times[this.triggers.offAt]) {
-        thereIsLight = false;
+            thereIsLight = false;
         }
     } else {
         if (azimuth > this.triggers.minAzimuth 
