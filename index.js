@@ -54,22 +54,23 @@ SunPositionAccessory.prototype.updatePosition = function() {
     var altitude = position.altitude * 180 / Math.PI;
     var azimuth = (position.azimuth * 180 / Math.PI + 180) % 360;
 
-    var thereIsLight = this.service.getCharacteristic(Characteristic.OccupancyDetected).value;
+    var lightOnFloor = this.service.getCharacteristic(Characteristic.OccupancyDetected).value;
 
-    if (thereIsLight) {
+    if (lightOnFloor) {
         // once there's light "detected," we don't turn off until the offAt time
         if (now > times[this.triggers.offAt]) {
-            thereIsLight = false;
+            lightOnFloor = false;
         }
     } else {
-        if (azimuth > this.triggers.minAzimuth 
+        if (now < times[this.triggers.offAt]
+             && azimuth > this.triggers.minAzimuth 
              && altitude > this.triggers.minAltitude
              && altitude < this.triggers.maxAltitude) {
-            thereIsLight = true;
+            lightOnFloor = true;
         }
     }
 
     this.log("Sun is " + altitude.toFixed(2) + " high at " + azimuth.toFixed(2) + " degrees");
-    this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(thereIsLight);
+    this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(lightOnFloor);
     setTimeout(this.updatePosition.bind(this), this.updatePeriod * 60 * 1000);
 }
