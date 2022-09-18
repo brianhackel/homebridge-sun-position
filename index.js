@@ -1,5 +1,6 @@
 suncalc = require('suncalc');
-
+const fetchUrl = require("fetch-promise");
+var weatherUrl = 'https://api.weather.com/v3/wx/forecast/daily/5day?units=e&language=en-US&format=json';
 let UpdatePeriod = 5;
 
 module.exports = function(homebridge) {
@@ -15,11 +16,13 @@ function SunPositionAccessory(log, config) {
     this.config = config;
     this.name = config.name;
     this.triggers = config.triggers;
+    this.apiKey = config.apiKey;
 
     if (!config.location || !Number.isFinite(config.location.lat) || !Number.isFinite(config.location.lon))
         throw new Error("Missing or invalid location configuration");
 
     this.location = config.location;
+    weatherUrl += "&apiKey=" + this.apiKey + "&geocode=" + this.location.lat + "," + this.location.lon;conf
     this.updatePeriod = config.updatePeriod || UpdatePeriod;
 
     this.log("Times for today at configured location:");
@@ -54,23 +57,36 @@ SunPositionAccessory.prototype.updatePosition = function() {
     var altitude = position.altitude * 180 / Math.PI;
     var azimuth = (position.azimuth * 180 / Math.PI + 180) % 360;
 
-    var lightOnFloor = this.service.getCharacteristic(Characteristic.OccupancyDetected).value;
-
-    if (lightOnFloor) {
+    var current = this.service.getCharacteristic(Characteristic.OccupancyDetected).value;
+    
+    this.log("Sun is " + altitude.toFixed(2) + " high at " + azimuth.toFixed(2) + " degrees");
+    
+    if (current) {
         // once there's light "detected," we don't turn off until the offAt time
         if (now > times[this.triggers.offAt]) {
-            lightOnFloor = false;
+            this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(false);
         }
     } else {
         if (now < times[this.triggers.offAt]
              && azimuth > this.triggers.minAzimuth 
              && altitude > this.triggers.minAltitude
              && altitude < this.triggers.maxAltitude) {
-            lightOnFloor = true;
+            fetchUrl(weatherUrl)
+             .then(result => {
+                var cloudPercentage = JSON.parse(result.buf).daypart[0].cloudCover.find(c => c!== null);
+                if (cloudPercentage === undefined || cloudPercentage === null) {
+                    cloudPercentage = 0;
+                }
+                var newValue = true;
+                if (cloudPercentage > 60) {
+                    newValue = false;
+                }
+                this.log("no sun on floor because wunderground reports cloudy skies (" + cloudPercentage + ")");
+                this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(newValue);
+            });
         }
     }
-
-    this.log("Sun is " + altitude.toFixed(2) + " high at " + azimuth.toFixed(2) + " degrees");
-    this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(lightOnFloor);
+    
     setTimeout(this.updatePosition.bind(this), this.updatePeriod * 60 * 1000);
 }
+

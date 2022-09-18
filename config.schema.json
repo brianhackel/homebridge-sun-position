@@ -74,6 +74,11 @@
           "minimum": 0.01666,
           "default": 5,
           "description": "How often to update the position in minutes."
+      },
+      "apiKey": {
+          "title": "Wunderground API Key",
+          "type": "string",
+          "description": "For determining if it's cloudy or not"
       }
 
     }
