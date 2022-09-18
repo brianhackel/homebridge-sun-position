@@ -22,7 +22,7 @@ function SunPositionAccessory(log, config) {
         throw new Error("Missing or invalid location configuration");
 
     this.location = config.location;
-    weatherUrl += "&apiKey=" + this.apiKey + "&geocode=" + this.location.lat + "," + this.location.lon;conf
+    weatherUrl += "&apiKey=" + this.apiKey + "&geocode=" + this.location.lat + "," + this.location.lon;
     this.updatePeriod = config.updatePeriod || UpdatePeriod;
 
     this.log("Times for today at configured location:");
@@ -79,9 +79,9 @@ SunPositionAccessory.prototype.updatePosition = function() {
                 }
                 var newValue = true;
                 if (cloudPercentage > 60) {
+                    this.log("no sun on floor because wunderground reports cloudy skies (" + cloudPercentage + ")");
                     newValue = false;
                 }
-                this.log("no sun on floor because wunderground reports cloudy skies (" + cloudPercentage + ")");
                 this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(newValue);
             });
         }
