@@ -82,6 +82,8 @@ SunPositionAccessory.prototype.updatePosition = function() {
                 if (cloudPercentage > this.cloudThreshold) {
                     this.log("no sun on floor because wunderground reports cloudy skies (" + cloudPercentage + ")");
                     newValue = false;
+                } else {
+                    this.log("cloud percentage is: " + cloudPercentage);
                 }
                 this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(newValue);
             });
