@@ -78,7 +78,17 @@
       "apiKey": {
           "title": "Wunderground API Key",
           "type": "string",
-          "description": "For determining if it's cloudy or not"
+          "description": "For determining if it's cloudy or not",
+          "required": true
+      },
+      "cloudThreshold": {
+          "title": "Cloud Threshold %",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 60,
+          "required": true,
+          "description": "The cloudy percentage above which we assume no sun on floor."
       }
 
     }

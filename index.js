@@ -17,6 +17,7 @@ function SunPositionAccessory(log, config) {
     this.name = config.name;
     this.triggers = config.triggers;
     this.apiKey = config.apiKey;
+    this.cloudThreshold = config.cloudThreshold;
 
     if (!config.location || !Number.isFinite(config.location.lat) || !Number.isFinite(config.location.lon))
         throw new Error("Missing or invalid location configuration");
@@ -78,7 +79,7 @@ SunPositionAccessory.prototype.updatePosition = function() {
                     cloudPercentage = 0;
                 }
                 var newValue = true;
-                if (cloudPercentage > 60) {
+                if (cloudPercentage > this.cloudThreshold) {
                     this.log("no sun on floor because wunderground reports cloudy skies (" + cloudPercentage + ")");
                     newValue = false;
                 }
