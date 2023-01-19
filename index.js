@@ -60,7 +60,7 @@ SunPositionAccessory.prototype.updatePosition = function() {
 
     var current = this.service.getCharacteristic(Characteristic.OccupancyDetected).value;
     
-    this.log("Sun is " + altitude.toFixed(2) + " high at " + azimuth.toFixed(2) + " degrees");
+    this.log.debug("Sun is " + altitude.toFixed(2) + " high at " + azimuth.toFixed(2) + " degrees");
     
     if (current) {
         // once there's light "detected," we don't turn off until the offAt time
@@ -83,7 +83,10 @@ SunPositionAccessory.prototype.updatePosition = function() {
                     this.log("no sun on floor because wunderground reports cloudy skies (" + cloudPercentage + ")");
                     newValue = false;
                 } else {
-                    this.log("cloud percentage is: " + cloudPercentage);
+                    this.log.debug("cloud percentage is: " + cloudPercentage);
+                }
+                if (newValue) {
+                    this.log("There is sun on the floor. OffTime is " + this.triggers.offAt);
                 }
                 this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(newValue);
             });
