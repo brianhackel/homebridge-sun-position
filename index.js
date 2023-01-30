@@ -86,7 +86,7 @@ SunPositionAccessory.prototype.updatePosition = function() {
                     this.log.debug("cloud percentage is: " + cloudPercentage);
                 }
                 if (newValue) {
-                    this.log("There is sun on the floor. OffTime is " + this.triggers.offAt);
+                    this.log("There is sun on the floor. OffTime is " + times[this.triggers.offAt] + ", clouds = " + cloudPercentage);
                 }
                 this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(newValue);
             });
