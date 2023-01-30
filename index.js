@@ -28,8 +28,9 @@ function SunPositionAccessory(log, config) {
 
     this.log("Times for today at configured location:");
     var times = suncalc.getTimes(new Date(), this.location.lat, this.location.lon);
+    var options = { hour12: false };
     Object.entries(times).forEach(([key, value]) => {
-        this.log(key.padStart(14," ") + " " + value.toLocaleTimeString());
+        this.log(key.padStart(14," ") + " " + value.toLocaleTimeString('en-US', options));
     });
 }
 
@@ -53,6 +54,7 @@ SunPositionAccessory.prototype.getServices = function() {
 SunPositionAccessory.prototype.updatePosition = function() {
     var now = new Date();
     var times = suncalc.getTimes(now, this.location.lat, this.location.lon);
+    var options = { hour12: false };
 
     var position = suncalc.getPosition(now, this.location.lat, this.location.lon);
     var altitude = position.altitude * 180 / Math.PI;
@@ -86,7 +88,8 @@ SunPositionAccessory.prototype.updatePosition = function() {
                     this.log.debug("cloud percentage is: " + cloudPercentage);
                 }
                 if (newValue) {
-                    this.log("There is sun on the floor. OffTime is " + times[this.triggers.offAt] + ", clouds = " + cloudPercentage);
+                    this.log("There is sun on the floor. OffTime is " 
+                             + times[this.triggers.offAt].toLocaleString('en-US', options) + ", clouds = " + cloudPercentage);
                 }
                 this.service.getCharacteristic(Characteristic.OccupancyDetected).updateValue(newValue);
             });
